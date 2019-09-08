@@ -3,14 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  signalingServerUrl: 'http://localhost:1794',
+  iceServers: [
+    {urls: 'stun:stun.1.google.com:19302'},
+    {urls: 'stun:stun1.l.google.com:19302'},
+    {urls: 'stun:eu-turn2.xirsys.com'},
+    {urls: 'turn:numb.viagenie.ca', username: 'iristicktestapp@gmail.com', credential: 'iristickpw123'}
+  ]
 };
-
-/*
- * For easier debugging in development mode, you can import the following file
- * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
- *
- * This import should be commented out in production mode because it will have a negative impact
- * on performance if an error is thrown.
- */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.

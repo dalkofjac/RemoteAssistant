@@ -1,8 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { HomeComponent } from './components/home/home.component';
+import { ConferenceCallComponent } from './components/conference-call/conference-call.component';
 
 
-const routes: Routes = [];
+const routes: Routes = [
+  { path: '', pathMatch: 'full', component: HomeComponent },
+  { path: 'conference-call', component: ConferenceCallComponent }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
