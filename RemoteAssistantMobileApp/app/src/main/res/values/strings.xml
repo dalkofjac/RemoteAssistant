@@ -1,4 +1,28 @@
 <resources>
+    <!--General-->
     <string name="app_name">RemoteAssistantMobileApp</string>
     <string name="action_settings">Settings</string>
+    <string name="default_image_desc">image</string>
+
+    <!--Main activity-->
+    <string name="act_main_title"><![CDATA[Remote Assistant conference call]]></string>
+    <string name="act_main_btn_start">Start</string>
+    <string name="act_call_btn_hang_up">Hangup</string>
+    <string name="act_main_room_name">Room name</string>
+    <string name="app_version_general">App version: </string>
+
+    <!--Conference call activity-->
+    <string name="hud_remote_image_waiting">Waiting for instructions &#8230;</string>
+    <string name="live_stream_text">Live streaming to remote peer</string>
+
+    <!--Error messages-->
+    <string name="error_not_implemented">This option is currently not implemented.</string>
+    <string name="error_glasses_general">Please fix Iristick glasses error(s) before starting a call.</string>
+    <string name="error_no_headset">Please connect your Iristick smart glasses.</string>
+    <string name="error_not_installed">Please install the Iristick Services before using this app.</string>
+    <string name="error_future_sdk">Please upgrade the Iristick Services to the latest version before using this app.</string>
+    <string name="error_deprecated_sdk">Please upgrade this app or downgrade the Iristick Services.</string>
+    <string name="error_invalid_license">The provided license file is invalid or has expired.  The examples will not work.</string>
+    <string name="error_room_name_leght">Room name needs to have at least 2 characters.</string>
+    <string name="error_other">An unknown error has occurred while connecting to the Iristick Services (code %d).</string>
 </resources>
