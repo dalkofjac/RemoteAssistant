@@ -6,7 +6,7 @@ import { ConferenceCallComponent } from './components/conference-call/conference
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', component: HomeComponent },
-  { path: 'conference-call', component: ConferenceCallComponent }
+  { path: 'conference-call/:room', component: ConferenceCallComponent }
 ];
 
 @NgModule({

@@ -1,5 +1,32 @@
-<div class="videos">
-  <video #localVideo id="localVideo" width="260" autoplay muted controls></video>
-  <video #remoteVideo id="remoteVideo" width="640" height="480" autoplay controls></video>
-  <video #remoteVideoTwo id="remoteVideoTwo" width="640" height="480" autoplay controls></video>
+<div class="content">
+  <div class="videos">
+    <video #remoteVideo id="remoteVideo" autoplay controls></video>
+    <video #remoteVideoTwo id="remoteVideoTwo" autoplay controls></video>
+  </div>
+  <div class="options">
+    <div class="small-local-video">
+      <video #localVideo id="localVideo" autoplay muted></video>
+    </div>
+    <div class="options-sub">
+      <div class="advanced-options">
+        <button class="adv-button" mat-raised-button color="primary" (click)="toggleFlashlight()">
+            Toggle flashlight
+        </button>
+        <button class="adv-button" mat-raised-button color="primary" (click)="toggleLaser()">
+            Toggle laser
+        </button>
+      </div>
+      <div class="custom-image-uploader">
+        <div class="image-preview" *ngIf="localImageUrl !== null && localImageUrl !== undefined">
+          <img [src]="localImageUrl">
+        </div>
+        <form #editForm="ngForm" class="form">
+          <mat-form-field class="uploader">
+            <app-upload #fileUpload name="uploader" accept=".jpg,.png" maxSize="10240KB"
+              [progress]="-1" (change)="onFileSelected($event)" matTooltip="Send image"></app-upload>
+          </mat-form-field>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>

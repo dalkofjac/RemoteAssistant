@@ -1,0 +1,13 @@
+<!-- TODO: style component -->
+<input #input id="md-input-file" class="file" type="file" [accept]="accept" (change)="onChange($event)">
+<div class="dropzone" [class.dragged]="dragged" [class.not-empty]="!empty" [class.uploading]="uploading">
+  <ng-container *ngIf="!uploading; else isUploading">
+    <mat-icon class="icon">publish</mat-icon>
+  </ng-container>
+  <ng-template #isUploading>
+    uploading...
+  </ng-template>
+</div>
+<div class="info">
+  <span *ngIf="uploading" class="info-progress">{{percentage}}%</span>
+</div>

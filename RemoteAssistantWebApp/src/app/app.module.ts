@@ -9,12 +9,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from './shared/shared.module';
 import { HomeComponent } from './components/home/home.component';
 import { ConferenceCallComponent } from './components/conference-call/conference-call.component';
+import { UploadComponent } from './shared/components/upload/upload.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    ConferenceCallComponent
+    ConferenceCallComponent,
+    UploadComponent
   ],
   imports: [
     BrowserModule,

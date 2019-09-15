@@ -4,6 +4,9 @@ import * as SocketIOClient from 'socket.io-client';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material';
 import { Constants } from 'src/app/shared/enums/constants';
+import { MenuService } from 'src/app/services/menu.service';
+import { ActivatedRoute } from '@angular/router';
+import { SendAudioVariables } from 'src/app/shared/enums/send-audio-variables';
 
 const pcConfig = {
   iceServers: environment.iceServers,
@@ -15,7 +18,7 @@ const pcConfig = {
   templateUrl: './conference-call.component.html',
   styleUrls: ['./conference-call.component.scss']
 })
-export class ConferenceCallComponent implements OnInit, OnDestroy {
+export class ConferenceCallComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('localVideo', null) localVideo: ElementRef;
   @ViewChild('remoteVideo', null) remoteVideo: ElementRef;
@@ -25,31 +28,49 @@ export class ConferenceCallComponent implements OnInit, OnDestroy {
   remoteStream: MediaStream;
   peerConnection: RTCPeerConnection;
 
-  room: string;
   socket: SocketIOClient.Socket;
   sdpConstraints: RTCOfferOptions;
 
   remoteStreamTwo: MediaStream;
   remoteVideoSrcTwo: SafeResourceUrl;
 
-  isChannelReady = false;
-  isInitiator = false;
-  isStarted = false;
+  isChannelReady: boolean = false;
+  isInitiator: boolean = false;
+  isStarted: boolean = false;
+
+  room: string;
+  sendAudio: boolean;
+  transferImageUrl: string | ArrayBuffer;
+  localImageUrl: string | ArrayBuffer;
 
   constructor(
     private sanitizer: DomSanitizer,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
+    private menuService: MenuService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
     this.socket = SocketIOClient.connect(environment.signalingServerUrl);
-    this.room = Constants.TestingRoom;
+
+    this.sendAudio = sessionStorage.getItem(SendAudioVariables.AllowAudio) === SendAudioVariables.Allow ? true : false;
+
+    this.route.paramMap.subscribe(async param => {
+      this.room = param['params']['room'];
+    });
+    if (!this.room) {
+      this.room = Constants.TestingRoom;
+    }
 
     this.socket.emit('create or join', this.room);
     console.log('Attempted to create or  join room', this.room);
 
     this.defineSocketCommunication();
     this.getUserMedia();
+  }
+
+  ngAfterViewInit() {
+    this.menuService.showHeaderArea(true);
   }
 
   defineSocketCommunication() {
@@ -102,6 +123,9 @@ export class ConferenceCallComponent implements OnInit, OnDestroy {
 
       } else if (message === 'bye' && self.isStarted) {
         self.handleRemoteHangup();
+
+      } else if (message.startsWith('data:image')) {
+        self.transferImageUrl = message;
       }
     });
   }
@@ -142,7 +166,12 @@ export class ConferenceCallComponent implements OnInit, OnDestroy {
     if (!self.isStarted && typeof self.localStream !== 'undefined' && self.isChannelReady) {
       console.log('>>>>>> creating peer connection');
       self.createPeerConnection();
+
       self.peerConnection.addTrack(self.localStream.getVideoTracks()[0], self.localStream);
+      if (this.sendAudio) {
+        self.peerConnection.addTrack(self.localStream.getAudioTracks()[0], self.localStream);
+      }
+
       self.isStarted = true;
       if (self.isInitiator) {
         self.doCall();
@@ -246,13 +275,30 @@ export class ConferenceCallComponent implements OnInit, OnDestroy {
     }
   }
 
+  onFileSelected(f: File) {
+    const reader = new FileReader();
+    reader.readAsDataURL(f);
+    reader.onload = () => {
+      this.localImageUrl = reader.result;
+      this.sendMessage(reader.result);
+    };
+  }
+
+  toggleFlashlight() {
+    this.sendMessage(Constants.FlashlightInstruction);
+  }
+
+  toggleLaser() {
+    this.sendMessage(Constants.LaserInstruction);
+  }
+
   ngOnDestroy() {
     this.hangup();
     setTimeout(() => {
       this.socket.disconnect();
     }, 1000);
     if (this.localStream && this.localStream.active) {
-      this.localStream.getTracks().forEach(function (track) { track.stop(); });
+      this.localStream.getTracks().forEach(function(track) { track.stop(); });
     }
   }
 

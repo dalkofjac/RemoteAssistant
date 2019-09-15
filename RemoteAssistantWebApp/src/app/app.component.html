@@ -1,10 +1,12 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
-    <span><strong>Remote Assistant WebApp</strong></span>
+    <span><strong>Remote Assistant</strong></span>
 
     <span class="main-spacer"></span>
 
-    <button mat-button routerLink="">Home</button>
+    <button *ngIf="showHeader" mat-mini-fab color="accent" routerLink="">
+      <mat-icon>call_end</mat-icon>
+    </button>
   </mat-toolbar-row>
 </mat-toolbar>
 

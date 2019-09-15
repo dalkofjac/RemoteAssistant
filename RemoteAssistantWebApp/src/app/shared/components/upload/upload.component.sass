@@ -1,0 +1,77 @@
+$dropzone-height: 40px
+$separator-height: 10px
+
+
+\:host
+  margin-top: 20
+  display: block
+  position: relative
+  cursor: pointer
+
+
+  &.disabled
+    cursor: default
+
+    .dropzone
+      opacity: 0.5
+
+
+  &.uploading
+    pointer-events: none
+
+
+
+.file
+  width: 0px
+  height: 0px
+  opacity: 0
+  overflow: hidden
+  position: absolute
+  z-index: -1
+
+
+
+.dropzone
+  position: absolute
+  top: -($dropzone-height + ($separator-height / 2)) - 15
+  width: 100%
+  height: $dropzone-height
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  outline: 2px dashed #ccc
+  outline-offset: -5px
+  box-sizing: border-box
+  background-color: #eee
+  transition: outline-offset ease-in-out 0.15s
+  margin-top: 20px
+  font-size: 12px
+
+
+  &.dragged,
+  &:hover
+    background-color: #ddd!important
+    outline-offset: -10px
+
+  &.not-empty
+    background-color: #fff
+
+
+  .icon
+    margin-bottom: 3px
+
+
+.info
+  position: absolute
+  right: 0
+  bottom: -3px
+
+
+  &-progress
+    display: inline-block
+    width: 40px
+    height: 40px
+    text-align: center
+    vertical-align: bottom
+    line-height: 44px

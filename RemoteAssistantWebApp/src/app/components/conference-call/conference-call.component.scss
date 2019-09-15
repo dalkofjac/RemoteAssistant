@@ -2,18 +2,72 @@ body {
   font-family: sans-serif;
 }
 
-video {
-  max-width: 100%;
-}
-
 .videos {
   margin-top: 5px;
+  text-align: center;
+  height: 50%;
+
+  video {
+    width: 49%;
+    height: 50vh;
+    margin: 3px;
+  }
 }
 
-#localVideo {
-  margin-right: 5px;
+.options {
+  display: flex;
+  position: relative;
+  margin: 5px;
+  justify-content: space-between;
 }
 
-#remoteVideo {
-  margin-right: 5px;
+.options-sub {
+  display: flex;
+}
+
+.small-local-video {
+  // position: absolute;
+  // right: 0%;
+  // top: 0%;
+  // z-index: 2;
+  padding: 5px;
+  
+  video {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.custom-image-uploader {
+  // position: absolute;
+  // right: 0%;
+  // top: 0%;
+  // z-index: 2;
+  padding: 25px 5px 5px 5px;
+
+  .uploader {
+    width: 50px;
+    margin: 0 10px;
+  }
+
+  .image-preview {
+    margin-top: -20px;
+    padding-bottom: 30px;
+    
+    img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+  }
+}
+
+.advanced-options {
+
+  .adv-button {
+    margin: 5px;
+  }
 }

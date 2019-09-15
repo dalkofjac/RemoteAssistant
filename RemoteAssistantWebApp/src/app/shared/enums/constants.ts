@@ -1,3 +1,5 @@
 export enum Constants {
-  TestingRoom = 'TEST'
+  TestingRoom = 'TEST',
+  FlashlightInstruction = 'instruction:flashlight',
+  LaserInstruction = 'instruction:laser'
 }

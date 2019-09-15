@@ -1,9 +1,35 @@
 <div class="content">
-  <p class="main-text">Remote Assistant conference call</p>
+  <p class="main-text">Conference Call</p>
   
-  <div class="buttons">
-    <button class="send-button" mat-raised-button color="primary" (click)="startConferenceCall()">
-      Start
-    </button>
-  </div>
+  <form #editForm="ngForm">
+    <mat-form-field class="input-field">
+
+      <input matInput required placeholder="Room name" [(ngModel)]="chosenRoomName" 
+          name="roomName" type="text" #roomName="ngModel" minlength="2">
+          
+      <mat-error *ngIf="roomName.invalid && (roomName.dirty || roomName.touched)">
+        <mat-error *ngIf="roomName.errors.required">
+          The room name is required
+        </mat-error>
+        <mat-error *ngIf="roomName.errors.minlength">
+          The room name needs to have at least 2 characters
+        </mat-error>
+      </mat-error>
+  
+    </mat-form-field>
+
+    <div class="sliders">
+      <div class="slider">
+        <mat-slide-toggle name="sendAudio" class="audio-slider" color="primary" [(ngModel)]="sendAudio">
+          Send audio to remote client
+        </mat-slide-toggle>
+      </div>
+    </div>
+    
+    <div class="buttons">
+      <button class="send-button" mat-raised-button color="primary" (click)="startConferenceCall()" [disabled]="!editForm.form.valid">
+        Start
+      </button>
+    </div>
+  </form>
 </div>
