@@ -44,7 +44,6 @@ export class ConferenceCallComponent implements OnInit, AfterViewInit, OnDestroy
   localImageUrl: string | ArrayBuffer;
 
   constructor(
-    private sanitizer: DomSanitizer,
     private snack: MatSnackBar,
     private menuService: MenuService,
     private route: ActivatedRoute
@@ -134,7 +133,7 @@ export class ConferenceCallComponent implements OnInit, AfterViewInit, OnDestroy
     const self = this;
 
     navigator.mediaDevices.getUserMedia({
-      audio: false,
+      audio: true,
       video: true
     })
     .then((stream: MediaStream) => {
@@ -290,6 +289,10 @@ export class ConferenceCallComponent implements OnInit, AfterViewInit, OnDestroy
 
   toggleLaser() {
     this.sendMessage(Constants.LaserInstruction);
+  }
+
+  triggerAutofocus() {
+    this.sendMessage(Constants.AutofocusInstruction);
   }
 
   ngOnDestroy() {

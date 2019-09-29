@@ -1,7 +1,6 @@
 package com.dk.remoteassistantmobileapp;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -12,6 +11,7 @@ import android.widget.Toast;
 
 import com.dk.remoteassistantmobileapp.helpers.IristickCameraTypes;
 import com.dk.remoteassistantmobileapp.huds.InstructionsHud;
+import com.dk.remoteassistantmobileapp.interfaces.InstructionsHudActionsListener;
 import com.dk.remoteassistantmobileapp.interfaces.SocketIOSignallingInterface;
 import com.dk.remoteassistantmobileapp.observers.CustomPeerConnectionObserver;
 import com.dk.remoteassistantmobileapp.observers.CustomSdpObserver;
@@ -29,10 +29,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
+import org.webrtc.CameraEnumerator;
 import org.webrtc.DefaultVideoDecoderFactory;
 import org.webrtc.DefaultVideoEncoderFactory;
 import org.webrtc.EglBase;
 import org.webrtc.IceCandidate;
+import org.webrtc.Logging;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
@@ -40,6 +42,7 @@ import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.SurfaceViewRenderer;
+import org.webrtc.VideoCapturer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
@@ -52,6 +55,7 @@ import butterknife.OnClick;
 public class ConferenceCallActivity extends BaseActivity implements HudActivity, SocketIOSignallingInterface {
 
     private final ConferenceCallActivity mThisActivity = this;
+    private InstructionsHudActionsListener mInstructionsHudListener;
 
     private PeerConnectionFactory mPeerConnectionFactory;
     private PeerConnection mLocalPeer;
@@ -121,6 +125,7 @@ public class ConferenceCallActivity extends BaseActivity implements HudActivity,
     @Override
     public HudPresentation onCreateHudPresentation(Display display) {
         InstructionsHud hud = new InstructionsHud(this, display);
+        mInstructionsHudListener = hud;
         return hud;
     }
 
@@ -418,18 +423,23 @@ public class ConferenceCallActivity extends BaseActivity implements HudActivity,
     }
 
     @Override
-    public void onImageReceived(String imageData) {
-        // TODO
+    public void onImageInstructionReceived(String imageData) {
+        mInstructionsHudListener.onDisplayImageReceived(imageData);
     }
 
     @Override
-    public void onTorchInstructionReceived() {
+    public void onFlashlightInstructionReceived() {
         mIristickCameraCapturerPrim.triggerTorch();
     }
 
     @Override
     public void onLaserInstructionReceived() {
         mIristickCameraCapturerPrim.triggerLaser();
+    }
+
+    @Override
+    public void onAutofocusInstructionReceived() {
+        mIristickCameraCapturerSec.triggerAF();
     }
 
     @OnClick(R.id.btn_end_call)
@@ -459,6 +469,7 @@ public class ConferenceCallActivity extends BaseActivity implements HudActivity,
 
     private void hangup() {
         stop();
+        mIristickCameraCapturerPrim.resetCamerasSettingsToDefault();
         SocketIOSignallingClient.getInstance(mRoomName).isInitiator = false;
         SocketIOSignallingClient.getInstance(mRoomName).emitMessage("bye");
         SocketIOSignallingClient.getInstance(mRoomName).emitByeMessage();
@@ -466,7 +477,8 @@ public class ConferenceCallActivity extends BaseActivity implements HudActivity,
 
     private void handleRemoteHangup() {
         stop();
-        // SocketIOSignallingClient.getInstance().isInitiator = false;
+        mInstructionsHudListener.onClientHangUp();
+        mIristickCameraCapturerPrim.resetCamerasSettingsToDefault();
         SocketIOSignallingClient.getInstance(mRoomName).isInitiator = true;
     }
 

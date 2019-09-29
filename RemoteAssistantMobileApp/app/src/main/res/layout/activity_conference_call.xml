@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -53,12 +53,14 @@
             android:layout_weight="1"
             android:orientation="horizontal">
 
-            <Button
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btn_end_call"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
                 android:layout_margin="5dp"
-                android:text="@string/act_call_btn_hang_up" />
+                app:backgroundTint="@color/colorAccent"
+                app:srcCompat="@drawable/ic_call_end_black_24dp" />
 
             <LinearLayout
                 android:id="@+id/live_stream_layout"
@@ -74,9 +76,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:contentDescription="@string/default_image_desc"
                     android:src="@drawable/ic_cast_connected_black_24dp"
-                    android:visibility="invisible"
-                    android:contentDescription="@string/default_image_desc" />
+                    android:visibility="invisible" />
 
                 <TextView
                     android:id="@+id/tV_peer_connected"

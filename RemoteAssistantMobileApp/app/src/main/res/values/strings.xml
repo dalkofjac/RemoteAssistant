@@ -1,11 +1,11 @@
 <resources>
     <!--General-->
-    <string name="app_name">RemoteAssistantMobileApp</string>
+    <string name="app_name">Remote Assistant</string>
     <string name="action_settings">Settings</string>
     <string name="default_image_desc">image</string>
 
     <!--Main activity-->
-    <string name="act_main_title"><![CDATA[Remote Assistant conference call]]></string>
+    <string name="act_main_title"><![CDATA[Conference Call]]></string>
     <string name="act_main_btn_start">Start</string>
     <string name="act_call_btn_hang_up">Hangup</string>
     <string name="act_main_room_name">Room name</string>

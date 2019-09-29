@@ -350,6 +350,15 @@ public class IristickCameraCapturer implements CameraVideoCapturer {
         }
     }
 
+    public void resetCamerasSettingsToDefault() {
+        if(mTorch) {
+            triggerTorch();
+        }
+        if(mLaser) {
+            triggerLaser();
+        }
+    }
+
     private final VideoSink mSink = new VideoSink() {
         @Override
         public void onFrame(VideoFrame frame) {

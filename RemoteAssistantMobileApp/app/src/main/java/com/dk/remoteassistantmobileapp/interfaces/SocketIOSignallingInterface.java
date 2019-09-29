@@ -22,9 +22,11 @@ public interface SocketIOSignallingInterface {
 
     void onRoomFull();
 
-    void onImageReceived(String imageData);
+    void onImageInstructionReceived(String imageData);
 
-    void onTorchInstructionReceived();
+    void onFlashlightInstructionReceived();
 
     void onLaserInstructionReceived();
+
+    void onAutofocusInstructionReceived();
 }

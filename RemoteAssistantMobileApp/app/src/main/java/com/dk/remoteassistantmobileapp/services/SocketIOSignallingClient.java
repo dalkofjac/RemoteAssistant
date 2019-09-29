@@ -67,7 +67,7 @@ public class SocketIOSignallingClient {
             SSLContext sslcontext = SSLContext.getInstance("TLS");
             sslcontext.init(null, trustAllCerts, null);
 
-            mSocket = IO.socket("http://localhost:1794");
+            mSocket = IO.socket("https://remote-assistant-server.azurewebsites.net");
             mSocket.connect();
 
             Log.d("SignallingClient", "init() called");
@@ -77,14 +77,14 @@ public class SocketIOSignallingClient {
             }
 
             //room created event.
-            mSocket.on("created mobile to web", args -> {
+            mSocket.on("created", args -> {
                 Log.d("SignallingClient", "created call() called with: args = [" + Arrays.toString(args) + "]");
                 isInitiator = true;
                 mCallback.onCreatedRoom();
             });
 
             //peer joined event
-            mSocket.on("joined mobile to web", args -> {
+            mSocket.on("joined", args -> {
                 Log.d("SignallingClient", "join call() called with: args = [" + Arrays.toString(args) + "]");
                 isChannelReady = true;
                 mCallback.onNewPeerJoined();
@@ -115,13 +115,16 @@ public class SocketIOSignallingClient {
                         mCallback.onRemoteHangUp(data);
                     }
                     if(data.startsWith("data:image")) {
-                        mCallback.onImageReceived(data);
+                        mCallback.onImageInstructionReceived(data);
                     }
                     if(data.matches("instruction:flashlight")) {
-                        mCallback.onTorchInstructionReceived();
+                        mCallback.onFlashlightInstructionReceived();
                     }
                     if(data.matches("instruction:laser")) {
                         mCallback.onLaserInstructionReceived();
+                    }
+                    if(data.matches("instruction:autofocus")){
+                        mCallback.onAutofocusInstructionReceived();
                     }
                 } else if (args[0] instanceof JSONObject) {
                     try {
