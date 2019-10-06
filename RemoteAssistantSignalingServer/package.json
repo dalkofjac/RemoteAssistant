@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "WebRTC codelab",
   "dependencies": {
-    "mime": "^1.4.1",
+    "mime": "^2.4.4",
     "mime-types": "^2.1.20",
     "node-static": "0.7.7",
     "socket.io": "2.1.1"
