@@ -1,8 +1,12 @@
 <resources>
     <!--General-->
-    <string name="app_name">Remote Assistant</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Remote Assistant (demo)</string>
+    <string name="action_about_app">About</string>
     <string name="default_image_desc">image</string>
+    <string name="app_name_general">APPLICATION</string>
+    <string name="app_version_number">1.0.0</string>
+    <string name="app_project_general">Project</string>
+    <string name="app_project">Remote Assistant (demo) @ DevArena 2019</string>
 
     <!--Main activity-->
     <string name="act_main_title"><![CDATA[Conference Call]]></string>

@@ -57,8 +57,9 @@
                 android:id="@+id/btn_end_call"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="true"
                 android:layout_margin="5dp"
+                android:backgroundTint="@color/colorDefaultAccent"
+                android:clickable="true"
                 app:backgroundTint="@color/colorAccent"
                 app:srcCompat="@drawable/ic_call_end_black_24dp" />
 

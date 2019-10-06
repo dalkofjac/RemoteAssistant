@@ -9,6 +9,7 @@ import java.util.List;
 
 public class IceServerService {
 
+    // test environment ice servers
     public static List<PeerConnection.IceServer> getIceServers() {
         List<IceServer> iceServers = new ArrayList<>();
 
