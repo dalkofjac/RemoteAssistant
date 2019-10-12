@@ -49,10 +49,13 @@ public class IristickCameraCapturer implements CameraVideoCapturer {
     private CaptureSession mCaptureSession;
     private boolean mFirstFrameObserved;
 
-    private float mZoom = 1.0f;
+    private final float mZoomDefault = 1.0f;
+    private float mZoomMax = 1.0f;
+
     private boolean mHasAutoFocus = false;
     private boolean mTorch = false;
     private boolean mLaser = false;
+    private boolean mZoom = false;
 
     public IristickCameraCapturer(Headset headset, CameraEventsHandler eventsHandler, String cameraName) {
         if (eventsHandler == null) {
@@ -87,6 +90,7 @@ public class IristickCameraCapturer implements CameraVideoCapturer {
         String cameraId = mChosenCameraName;
 
         CameraCharacteristics characteristics = mHeadset.getCameraCharacteristics(cameraId);
+        mZoomMax = characteristics.get(CameraCharacteristics.SCALER_MAX_ZOOM);
 
         CameraCharacteristics.StreamConfigurationMap streams = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
         Point[] sizes = streams.getSizes();
@@ -272,7 +276,7 @@ public class IristickCameraCapturer implements CameraVideoCapturer {
 
     private void setupCaptureRequest(CaptureRequest.Builder builder) {
         // zoom is currently always set to default value (1)
-        builder.set(CaptureRequest.SCALER_ZOOM, mZoom);
+        builder.set(CaptureRequest.SCALER_ZOOM, mZoomDefault);
 
         // auto-focus is only required on zoom camera
         if (mHasAutoFocus) {
@@ -292,6 +296,11 @@ public class IristickCameraCapturer implements CameraVideoCapturer {
     public void triggerLaser() {
         mLaser = !mLaser;
         mCameraThreadHandler.post(this::triggerLaserInternal);
+    }
+
+    public void triggerZoom() {
+        mZoom = !mZoom;
+        mCameraThreadHandler.post(this::triggerZoomInternal);
     }
 
     public void closeCameraBeforeShutDown(){
@@ -350,12 +359,32 @@ public class IristickCameraCapturer implements CameraVideoCapturer {
         }
     }
 
+    private void triggerZoomInternal() {
+        Log.d(TAG, "triggerZoomInternal");
+
+        checkIsOnCameraThread();
+        synchronized (mStateLock) {
+            if (!mHasAutoFocus || mSessionOpening || mStopping || mCaptureSession == null) {
+                return;
+            }
+
+            CaptureRequest.Builder builder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            builder.addTarget(mSurface);
+            setupCaptureRequest(builder);
+            builder.set(CaptureRequest.SCALER_ZOOM, mZoom ? mZoomMax : mZoomDefault);
+            mCaptureSession.setRepeatingRequest(builder.build(), null, null);
+        }
+    }
+
     public void resetCamerasSettingsToDefault() {
         if(mTorch) {
             triggerTorch();
         }
         if(mLaser) {
             triggerLaser();
+        }
+        if(mZoom) {
+            triggerZoom();
         }
     }
 

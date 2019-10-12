@@ -123,8 +123,11 @@ public class SocketIOSignallingClient {
                     if(data.matches("instruction:laser")) {
                         mCallback.onLaserInstructionReceived();
                     }
-                    if(data.matches("instruction:autofocus")){
+                    if(data.matches("instruction:autofocus")) {
                         mCallback.onAutofocusInstructionReceived();
+                    }
+                    if(data.matches("instruction:zoom")) {
+                        mCallback.onZoomInstructionReceived();
                     }
                 } else if (args[0] instanceof JSONObject) {
                     try {

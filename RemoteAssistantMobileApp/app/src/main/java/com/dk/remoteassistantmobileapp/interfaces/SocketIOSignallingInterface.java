@@ -29,4 +29,6 @@ public interface SocketIOSignallingInterface {
     void onLaserInstructionReceived();
 
     void onAutofocusInstructionReceived();
+
+    void onZoomInstructionReceived();
 }

@@ -295,6 +295,10 @@ export class ConferenceCallComponent implements OnInit, AfterViewInit, OnDestroy
     this.sendMessage(Constants.AutofocusInstruction);
   }
 
+  toggleZoom() {
+    this.sendMessage(Constants.ZoomInstruction);
+  }
+
   ngOnDestroy() {
     this.hangup();
     setTimeout(() => {

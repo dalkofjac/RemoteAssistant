@@ -442,9 +442,15 @@ public class ConferenceCallActivity extends BaseActivity implements HudActivity,
         mIristickCameraCapturerSec.triggerAF();
     }
 
+    @Override
+    public void onZoomInstructionReceived() {
+        mIristickCameraCapturerSec.triggerZoom();
+    }
+
     @OnClick(R.id.btn_end_call)
     public void onBtnHangupClicked() {
         hangup();
+        super.onBackPressed();
     }
 
     @Override
