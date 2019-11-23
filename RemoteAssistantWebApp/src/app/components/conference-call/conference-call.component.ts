@@ -40,7 +40,6 @@ export class ConferenceCallComponent implements OnInit, AfterViewInit, OnDestroy
 
   room: string;
   sendAudio: boolean;
-  transferImageUrl: string | ArrayBuffer;
   localImageUrl: string | ArrayBuffer;
 
   constructor(
@@ -50,9 +49,8 @@ export class ConferenceCallComponent implements OnInit, AfterViewInit, OnDestroy
   ) { }
 
   ngOnInit() {
-    this.socket = SocketIOClient.connect(environment.signalingServerUrl);
-
-    this.sendAudio = sessionStorage.getItem(SendAudioVariables.AllowAudio) === SendAudioVariables.Allow ? true : false;
+    const allowAudio = sessionStorage.getItem(SendAudioVariables.AllowAudio);
+    this.sendAudio = allowAudio === SendAudioVariables.Allow ? true : false;
 
     this.route.paramMap.subscribe(async param => {
       this.room = param['params']['room'];
@@ -61,15 +59,23 @@ export class ConferenceCallComponent implements OnInit, AfterViewInit, OnDestroy
       this.room = Constants.TestingRoom;
     }
 
-    this.socket.emit('create or join', this.room);
-    console.log('Attempted to create or  join room', this.room);
-
-    this.defineSocketCommunication();
-    this.getUserMedia();
+    this.start();
   }
 
   ngAfterViewInit() {
     this.menuService.showHeaderArea(true);
+  }
+
+  start() {
+    // #1 connect to signaling server
+    this.socket = SocketIOClient.connect(environment.signalingServerUrl);
+    this.socket.emit('create or join', this.room);
+
+    // #2 define communication via sockets
+    this.defineSocketCommunication();
+
+    // #3 get media from current client
+    this.getUserMedia();
   }
 
   defineSocketCommunication() {
@@ -123,8 +129,6 @@ export class ConferenceCallComponent implements OnInit, AfterViewInit, OnDestroy
       } else if (message === 'bye' && self.isStarted) {
         self.handleRemoteHangup();
 
-      } else if (message.startsWith('data:image')) {
-        self.transferImageUrl = message;
       }
     });
   }

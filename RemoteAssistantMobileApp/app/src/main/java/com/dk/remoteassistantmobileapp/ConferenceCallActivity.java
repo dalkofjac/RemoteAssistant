@@ -29,12 +29,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
-import org.webrtc.CameraEnumerator;
 import org.webrtc.DefaultVideoDecoderFactory;
 import org.webrtc.DefaultVideoEncoderFactory;
 import org.webrtc.EglBase;
 import org.webrtc.IceCandidate;
-import org.webrtc.Logging;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
@@ -42,7 +40,6 @@ import org.webrtc.PeerConnectionFactory;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.SurfaceViewRenderer;
-import org.webrtc.VideoCapturer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
@@ -96,6 +93,8 @@ public class ConferenceCallActivity extends BaseActivity implements HudActivity,
         Bundle extras = getIntent().getExtras();
         mRoomName = extras.getString("ROOM_NAME");
         if(mRoomName == null) { mRoomName = "testroom"; }
+        mPeerIceServers = IceServerService.getIceServers();
+        mIristickHeadset = IristickApp.getHeadset();
 
         // Make sure screen is always on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -105,9 +104,18 @@ public class ConferenceCallActivity extends BaseActivity implements HudActivity,
         initViews();
         initVideos();
 
-        mPeerIceServers = IceServerService.getIceServers();
-        SocketIOSignallingClient.getInstance(mRoomName).init(this);
         start();
+    }
+
+    private void start() {
+        // #1 connect to signaling server
+        SocketIOSignallingClient.getInstance(mRoomName).init(this);
+
+        // #2 define communication via sockets
+        SocketIOSignallingClient.getInstance(mRoomName).defineSocketCommunication(this);
+
+        // #3 get media from current client
+        setupUserMedia();
     }
 
     @Override
@@ -146,17 +154,7 @@ public class ConferenceCallActivity extends BaseActivity implements HudActivity,
         mLocalVideoViewSec.setZOrderMediaOverlay(true);
     }
 
-    private void start() {
-        // Check for Iristick glasses
-        mIristickHeadset = IristickApp.getHeadset();
-
-        if (mIristickHeadset == null) {
-            showToast("Waiting for headset...");
-            return;
-        } else {
-            mHeadsetConnected = true;
-        }
-
+    private void setupUserMedia() {
         // Initialize the PeerConnectionFactory globals
         PeerConnectionFactory.InitializationOptions initializationOptions = PeerConnectionFactory.InitializationOptions
                 .builder(this)
@@ -174,10 +172,6 @@ public class ConferenceCallActivity extends BaseActivity implements HudActivity,
                 .setVideoEncoderFactory(new DefaultVideoEncoderFactory(mRootEglBase.getEglBaseContext(), false, false))
                 .setVideoDecoderFactory(new DefaultVideoDecoderFactory(mRootEglBase.getEglBaseContext()))
                 .createPeerConnectionFactory();
-
-
-        mIristickCameraCapturerPrim = new IristickCameraCapturer(mIristickHeadset, null, IristickCameraTypes.CENTER_CAMERA);
-        mIristickCameraCapturerSec = new IristickCameraCapturer(mIristickHeadset, null, IristickCameraTypes.ZOOM_CAMERA);
 
         // Create a VideoSource instance
         mVideoSourcePrim = mPeerConnectionFactory.createVideoSource(false);
@@ -197,6 +191,9 @@ public class ConferenceCallActivity extends BaseActivity implements HudActivity,
         // Initialize the VideoCapturer
         SurfaceTextureHelper surfaceTextureHelperPrim = SurfaceTextureHelper.create("CaptureThreadOne", mRootEglBase.getEglBaseContext());
         SurfaceTextureHelper surfaceTextureHelperSec = SurfaceTextureHelper.create("CaptureThreadTwo", mRootEglBase.getEglBaseContext());
+
+        mIristickCameraCapturerPrim = new IristickCameraCapturer(mIristickHeadset, null, IristickCameraTypes.CENTER_CAMERA);
+        mIristickCameraCapturerSec = new IristickCameraCapturer(mIristickHeadset, null, IristickCameraTypes.ZOOM_CAMERA);
 
         mIristickCameraCapturerPrim.initialize(surfaceTextureHelperPrim, this, mVideoSourcePrim.getCapturerObserver());
         mIristickCameraCapturerSec.initialize(surfaceTextureHelperSec, this, mVideoSourceSec.getCapturerObserver());

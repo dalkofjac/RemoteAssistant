@@ -21,20 +21,13 @@ var io = socketIO.listen(server);
 
 io.sockets.on('connection', function(socket) {
 
-    // convenience function to log server messages on the client
     function log() {
       var array = ['Message from server:'];
       array.push.apply(array, arguments);
       socket.emit('log', array);
     }
   
-    socket.on('message', function(message, room) {
-      log('Client said: ', message);
-      if(socket.rooms[room]) {
-        socket.to(room).emit('message', message);
-      } 
-    });
-  
+    // if client wants to create or join the room
     socket.on('create or join', function(room) {
       log('Received request to create or join room ' + room);
   
@@ -42,7 +35,7 @@ io.sockets.on('connection', function(socket) {
       var numClients = 1;
       if(roomObject !== undefined) {
         numClients = roomObject.length + 1;
-      }     
+      }
       log('Room ' + room + ' now has ' + numClients + ' client(s)');
   
       if (numClients === 1) {
@@ -58,18 +51,16 @@ io.sockets.on('connection', function(socket) {
         socket.emit('full', room);
       }
     });
-  
-    socket.on('ipaddr', function() {
-      var ifaces = os.networkInterfaces();
-      for (var dev in ifaces) {
-        ifaces[dev].forEach(function(details) {
-          if (details.family === 'IPv4' && details.address !== '127.0.0.1') {
-            socket.emit('ipaddr', details.address);
-          }
-        });
+
+    // if client wants to send a new message to the room
+    socket.on('message', function(message, room) {
+      log('Client said: ', message);
+      if(socket.rooms[room]) {
+        socket.to(room).emit('message', message);
       }
     });
   
+    // if client wants to leave the room
     socket.on('bye', function(){
       console.log('received bye');
       socket.disconnect();

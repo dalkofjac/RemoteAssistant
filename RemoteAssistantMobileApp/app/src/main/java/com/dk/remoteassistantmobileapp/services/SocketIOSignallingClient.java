@@ -24,6 +24,7 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 
 public class SocketIOSignallingClient {
+    private final String mSignalingServerUrl = "https://remote-assistant-server.azurewebsites.net";
     private static SocketIOSignallingClient mInstance;
     private String mRoomName = null;
     private Socket mSocket;
@@ -66,43 +67,41 @@ public class SocketIOSignallingClient {
         try {
             SSLContext sslcontext = SSLContext.getInstance("TLS");
             sslcontext.init(null, trustAllCerts, null);
-
-            mSocket = IO.socket("https://remote-assistant-server.azurewebsites.net");
+            mSocket = IO.socket(mSignalingServerUrl);
             mSocket.connect();
-
-            Log.d("SignallingClient", "init() called");
 
             if (!mRoomName.isEmpty()) {
                 emitInitStatement(mRoomName);
             }
+        } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
+            e.printStackTrace();
+        }
+    }
 
-            //room created event.
+    public void defineSocketCommunication(SocketIOSignallingInterface signalingInterface) {
+        this.mCallback = signalingInterface;
+        try {
             mSocket.on("created", args -> {
                 Log.d("SignallingClient", "created call() called with: args = [" + Arrays.toString(args) + "]");
                 isInitiator = true;
                 mCallback.onCreatedRoom();
             });
 
-            //peer joined event
             mSocket.on("joined", args -> {
                 Log.d("SignallingClient", "join call() called with: args = [" + Arrays.toString(args) + "]");
                 isChannelReady = true;
                 mCallback.onNewPeerJoined();
             });
 
-            //room is full event
             mSocket.on("full", args -> {
                 Log.d("SignallingClient", "full call() called with: args = [" + Arrays.toString(args) + "]");
                 mCallback.onRoomFull();
             });
 
-            //log event
             mSocket.on("log", args -> Log.d("SignallingClient", "log call() called with: args = [" + Arrays.toString(args) + "]"));
 
-            //bye event (currently not in use)
             mSocket.on("bye", args -> { });
 
-            //messages - SDP and ICE candidates are transferred through this
             mSocket.on("message", args -> {
                 Log.d("SignallingClient", "message call() called with: args = [" + Arrays.toString(args) + "]");
                 if (args[0] instanceof String) {
@@ -147,7 +146,7 @@ public class SocketIOSignallingClient {
                     }
                 }
             });
-        } catch (URISyntaxException | NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
